@@ -1,8 +1,10 @@
-import TipoEquipos from "./components/TipoEquipos";
+
+import AppRouter from "./routes/AppRouter";
 
 function App() {
+  const title = 'Tipo de equipos'
   return (
-    <TipoEquipos title={'Tipo de Equipos'}/>
+    <AppRouter/>
   );
 }
 
