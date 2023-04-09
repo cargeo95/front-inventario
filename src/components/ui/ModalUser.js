@@ -1,17 +1,14 @@
 import React from 'react'
 
-export default function Modal({
+export default function ModalUser({
     title,
     closeModal,
     handleChange,
     saveTipoEquipo,
     tipoEquipo,
     loadingSave
-  
-  }) {
-  
+}) {
   return (
-    
     <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div className="modal-dialog">
       <div className="modal-content">
@@ -40,6 +37,18 @@ export default function Modal({
                 name="nombre"
                 onChange={handleChange}
                 value={tipoEquipo.nombre}
+              />
+              <label htmlFor="recipient-email" 
+              className="col-form-label">
+                Email:
+              </label>
+              <input 
+                type="text" 
+                className="form-control" 
+                id="recipient-email"
+                name="email"
+                onChange={handleChange}
+                value={tipoEquipo.email}
               />
              
             </div>

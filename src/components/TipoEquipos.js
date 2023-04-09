@@ -1,35 +1,37 @@
 import React, { useEffect, useState } from 'react'
-import { getTipoEquipos } from '../services/TipoEquipoService'
-import { createTipoEquipos } from '../services/TipoEquipoService'
+import { getTipoEquipos, createTipoEquipos } from '../services/TipoEquipoService'
 import dayjs from 'dayjs'
 import Modal from './ui/Modal'
 
 
 export default function TipoEquipos() {
-  const title = 'Tipo de Equipos'
+  const title= 'Tipo de Equipo'
   const [tipoEquipos, setTipoEquipos] = useState([])
   const [query, setQuery] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]= useState(false)
   const [tipoEquipo, setTipoEquipo] = useState({
-    nombre : ''
+    nombre: ''
   })
   const [loadingSave, setLoadingSave] = useState(false)
 
   const listTipoEquipos = async () => {
-    try {
+    try{
       setError(false)
       setLoading(true)
-      const {data} = await getTipoEquipos(query)
-      setTipoEquipos(data)
+      const { data } = await getTipoEquipos(query)
       console.log(data)
-      setLoading(false)
-    } catch (e) {
+      setTipoEquipos(data)
+      
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
+      
+    }catch(e){
       console.log(e)
-      setLoading(true)
+      setError(true)
       setLoading(false)
     }
-
   }
 
   useEffect(() => {
@@ -48,32 +50,33 @@ export default function TipoEquipos() {
     })
   }
 
-  const saveTipoEquipo = async() => {
-    try {
+  const saveTipoEquipo = async () => {
+    try{
       setError(false)
-      setLoading(true)
       setLoadingSave(true)
       const response = await createTipoEquipos(tipoEquipo)
-      setTipoEquipo({nomnbre : ''})
-      listTipoEquipos()
       console.log(response)
-      setLoading(false)
-    } catch (e) {
+      setTipoEquipo({nombre: ''})
+      listTipoEquipos()
+      setTimeout(() => {
+        setLoadingSave(false)
+      }, 500)
+    }catch(e){
       console.log(e)
-      setLoading(true)
+      setError(true)
       setLoadingSave(false)
     }
   }
 
   const closeModal = () => {
-    setTipoEquipo({nomnbre : ''})
+    setTipoEquipo({nombre: ''})
   }
-
+  
   return (
     <>
 
-      <Modal
-        title = {title}
+      <Modal 
+        title={title}
         closeModal={closeModal}
         handleChange={handleChange}
         tipoEquipo={tipoEquipo}
@@ -98,10 +101,10 @@ export default function TipoEquipos() {
       </div>
       <button 
         type="button"
-        className='btn btn-primary' 
-        data-toggle="modal" 
-        data-target="#exampleModal" 
-        data-whatever="@mdo" >
+        className='btn btn-outline-primary' 
+        data-bs-toggle="modal" 
+        data-bs-target="#exampleModal" 
+        data-bs-whatever="@mdo" >
         Agregar
       </button>
       {
