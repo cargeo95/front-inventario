@@ -18,7 +18,17 @@ const createMarcas = (data ={}) => {
     })
 }
 
+// editar una marca
+const editMarcas = (tipoId, data) => {
+    return axiosConfig.put('marcas/'+tipoId, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
 export {
     getMarcas,
-    createMarcas
+    createMarcas,
+    editMarcas
 }   

@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import { getInventario, createInventario } from '../services/InventarioService'
+import { getInventarios, createInventarios, editInventarios } from '../services/InventarioService'
 import dayjs from 'dayjs'
 import ModalInventario from './ui/ModalInventario'
+import ModalEdit from './ui/ModalEdit'
 
 
 export default function Inventarios() {
@@ -24,12 +25,18 @@ export default function Inventarios() {
     tipoEquipo: '641937d639321854a6a781b4'
   })
   const [loadingSave, setLoadingSave] = useState(false)
+  const [id, setId] = useState('')
     
+
+  /*
+      LISTAR 
+  */
+
   const listInventarios = async () => {
     try{
       setError(false)
       setLoading(true)
-      const { data } = await getInventario()
+      const { data } = await getInventarios()
       console.log(data)
       setInventarios(data)
       setTimeout(() => {
@@ -60,11 +67,15 @@ export default function Inventarios() {
     })
   }
 
+  /*
+      GUARDAR 
+  */
+
   const saveInventario = async (e) => {
     try{
       setError(false)
       setLoadingSave(true)
-      const response = await createInventario(inventario)
+      const response = await createInventarios(inventario)
       console.log(response)
       setInventario({
         serial: '',
@@ -100,10 +111,48 @@ export default function Inventarios() {
       fechaCompra: '',
       precio: '',
     })
+    if(id)setId('')
   }  
+
+   /*
+      EDITAR 
+  */
+ const selectInventario = (evt) => {
+  evt.preventDefault()
+  setId(evt.target.id)
+  const tEq = inventarios.filter(inventario => inventario._id === evt.target.id)
+  setInventario({...tEq[0]})
+ }
+
+ const editInventario = async () => {
+  try{
+    setError(false)
+    setLoadingSave(true)
+    const response = await editInventarios(id, inventario)
+    console.log(response)
+    setInventario({nombre: ''})
+    listInventarios()
+    setTimeout(() => {
+      setLoadingSave(false)
+    }, 500)
+  }catch(e){
+    console.log(e)
+    setError(true)
+    setLoadingSave(false)
+  }
+} 
+      
 
   return (
     <>
+     <ModalEdit
+        title={title}
+        closeModal={closeModal}
+        handleChange={handleChange}
+        tipo={inventario}
+        loadingSave={loadingSave}
+        edit={editInventario}
+      />
 
       <ModalInventario
           title={title}
@@ -173,12 +222,14 @@ export default function Inventarios() {
                         <td>{inventario.precio}</td>
                         <td>
                           <button 
-                            type="button"
-                            className='btn btn-outline-primary' 
+                            onClick={selectInventario}
+                            type="button" 
+                            className="btn btn-success"
                             data-bs-toggle="modal" 
-                            data-bs-target="#exampleModal" 
-                            data-bs-whatever="@mdo" >
-                            Actualizar
+                            data-bs-target="#exampleModalEdit" 
+                            id={inventario._id}
+                          >
+                            Editar
                           </button>
                         </td>
                       </tr>

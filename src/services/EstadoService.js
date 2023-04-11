@@ -1,6 +1,6 @@
 import { axiosConfig } from "../configuration/axiosConfig"
 
-// Obtener los estados de equipos
+// Obtener los estado
 const getEstados = (estado) => {
     return axiosConfig.get('estadoequipos?estado='+estado, {
         headers: {
@@ -9,7 +9,7 @@ const getEstados = (estado) => {
     })
 }
 
-// Crear un estado de equipo
+// Crear un estado 
 const createEstados = (data ={}) => {
     return axiosConfig.post('estadoequipos', data, {
         headers: {
@@ -18,7 +18,17 @@ const createEstados = (data ={}) => {
     })
 }
 
+//Editar un estado 
+const editEstados = (tipoId, data) => {
+    return axiosConfig.put('estadoequipos/'+tipoId, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
 export {
     getEstados,
-    createEstados
+    createEstados,
+    editEstados
 }

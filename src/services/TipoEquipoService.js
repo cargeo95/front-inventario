@@ -19,8 +19,17 @@ const createTipoEquipos = (data ={}) => {
 }
 
 //Editar un tipo de equipo
+const editTipoEquipos = (tipoId, data) => {
+    return axiosConfig.put('tipoequipos/'+tipoId, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
 
 export {
     getTipoEquipos,
-    createTipoEquipos
+    createTipoEquipos,
+    editTipoEquipos
 }

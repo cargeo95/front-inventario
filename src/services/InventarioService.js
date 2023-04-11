@@ -1,7 +1,7 @@
 import { axiosConfig } from "../configuration/axiosConfig"
 
-// Obtener los estados de equipos
-const getInventario = () => {
+// Obtener inventario
+const getInventarios = () => {
     return axiosConfig.get('inventarios?', {
         headers: {
             'Content-Type': 'application/json'
@@ -9,8 +9,8 @@ const getInventario = () => {
     })
 }
 
-// Crear un estado de equipo
-const createInventario = (data ={}) => {
+// Crear un inventario
+const createInventarios = (data ={}) => {
     return axiosConfig.post('inventarios', data, {
         headers: {
             'Content-Type': 'application/json'
@@ -18,7 +18,17 @@ const createInventario = (data ={}) => {
     })
 }
 
+//Editar un  inventario
+const editInventarios = (tipoId, data) => {
+    return axiosConfig.put('inventarios/'+tipoId, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
 export {
-    getInventario,
-    createInventario
+    getInventarios,
+    createInventarios,
+    editInventarios
 }

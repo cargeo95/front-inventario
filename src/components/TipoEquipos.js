@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { getTipoEquipos, createTipoEquipos } from '../services/TipoEquipoService'
+import { getTipoEquipos, createTipoEquipos, editTipoEquipos } from '../services/TipoEquipoService'
 import dayjs from 'dayjs'
 import Modal from './ui/Modal'
+import ModalEdit from './ui/ModalEdit'
 
 
 export default function TipoEquipos() {
@@ -14,7 +15,12 @@ export default function TipoEquipos() {
     nombre: ''
   })
   const [loadingSave, setLoadingSave] = useState(false)
+  const [id, setId] = useState('')
+  
 
+  /*
+      LISTAR 
+  */
   const listTipoEquipos = async () => {
     try{
       setError(false)
@@ -50,6 +56,9 @@ export default function TipoEquipos() {
     })
   }
 
+ /*
+      GUARDAR
+  */
   const saveTipoEquipo = async () => {
     try{
       setError(false)
@@ -68,12 +77,54 @@ export default function TipoEquipos() {
     }
   }
 
+ 
+
   const closeModal = () => {
     setTipoEquipo({nombre: ''})
+    if(id)setId('')
   }
   
+
+ /*
+      EDITAR 
+  */
+
+  const selectTipoEquipo = (evt) => {
+    evt.preventDefault()
+    setId(evt.target.id)
+    const tEq = tipoEquipos.filter(tipoEquipo => tipoEquipo._id === id)
+    setTipoEquipo({...tEq[0]})
+  }
+
+  const editTipoEquipo = async (tipoEquipo) => {
+    try{
+      setError(false)
+      setLoadingSave(true)
+      const response = await editTipoEquipos(id, tipoEquipo)
+      console.log(response)
+      setTipoEquipo({nombre: ''})
+      listTipoEquipos()
+      setTimeout(() => {
+        setLoadingSave(false)
+      }, 500)
+    }catch(e){
+      console.log(e)
+      setError(true)
+      setLoadingSave(false)
+    }
+  }
+
+
   return (
     <>
+      <ModalEdit
+        title={title}
+        closeModal={closeModal}
+        handleChange={handleChange}
+        tipo={tipoEquipo}
+        loadingSave={loadingSave}
+        edit={editTipoEquipo}
+      />
 
       <Modal 
         title={title}
@@ -145,7 +196,17 @@ export default function TipoEquipos() {
                         <td>{tipoEquipo.estado ? 'Activo' : 'Inactivo'}</td>
                         <td>{dayjs(tipoEquipo.fechaCreacion).format('YYYY-MM-DD')}</td>
                         <td>{dayjs(tipoEquipo.fechaActualizacion).format('YYYY-MM-DD')}</td>
-                        <td><button className='btn btn-primary'>Editar</button></td>
+                        <td>
+                          <button 
+                            onClick={selectTipoEquipo}
+                            type="button" 
+                            className="btn btn-success"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#exampleModalEdit" 
+                            id={tipoEquipo._id}
+                          >
+                            Editar
+                          </button></td>
                       </tr>
                     )
                   })

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { getEstados, createEstados } from '../services/EstadoService'
+import { getEstados, createEstados, editEstados } from '../services/EstadoService'
 import dayjs from 'dayjs'
 import Modal from './ui/Modal'
+import ModalEdit from './ui/ModalEdit'
 
 export default function Estados() {
   const title= 'Estado de Equipo'
@@ -13,6 +14,11 @@ export default function Estados() {
     nombre: ''
   })
   const [loadingSave, setLoadingSave] = useState(false)
+  const [id, setId] = useState('')
+
+  /*
+      LISTAR 
+  */
 
   const listEstados = async () => {
     try{
@@ -47,6 +53,11 @@ export default function Estados() {
     })
   }
 
+
+  /*
+      GUARDAR 
+  */
+
   const saveEstado = async () => {
     try{
       setError(false)
@@ -67,12 +78,52 @@ export default function Estados() {
 
   const closeModal = () => {
     setEstado({nombre: ''})
+    if(id)setId('')
   }
 
+
+   /*
+      EDITAR 
+  */
+  const selectEstado = (evt) => {
+    evt.preventDefault()
+    setId(evt.target.id)
+    const tEq = estados.filter(estado => estado._id === evt.target.id)
+    setEstado({...tEq[0]})
+  }
+
+  const editEstado = async () => {
+    try{
+      setError(false)
+      setLoadingSave(true)
+      const response = await editEstados(id, estado)
+      console.log(response)
+      setEstado({nombre: ''})
+      listEstados()
+      setTimeout(() => {
+        setLoadingSave(false)
+      }, 500)
+    }catch(e){
+      console.log(e)
+      setError(true)
+      setLoadingSave(false)
+    }
+  }
+      
 
 
   return (
     <>
+
+      <ModalEdit
+        title={title}
+        closeModal={closeModal}
+        handleChange={handleChange}
+        tipo={estado}
+        loadingSave={loadingSave}
+        edit={editEstado}
+      />
+
      <Modal 
           title={title}
           closeModal={closeModal}
@@ -147,7 +198,16 @@ export default function Estados() {
                       <td>{estado.estado ? 'Activo' : 'Inactivo' }</td>
                       <td>{dayjs(estado.fechaCreacion).format('YYYY-MM-DD')}</td>
                       <td>{dayjs(estado.fechaActualizacion).format('YYYY-MM-DD')}</td>
-                      <td><button className="btn btn-warning">Editar</button></td>
+                      <td><button 
+                            onClick={selectEstado}
+                            type="button" 
+                            className="btn btn-success"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#exampleModalEdit" 
+                            id={estado._id}
+                          >
+                            Editar
+                          </button></td>
                     </tr>
                   )
                 })

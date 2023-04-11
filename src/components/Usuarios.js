@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { getUsuarios, createUsuarios } from '../services/UsuarioService'
+import { getUsuarios, createUsuarios, editUsuarios } from '../services/UsuarioService'
 import dayjs from 'dayjs'
 import ModalUser from './ui/ModalUser'
+import ModalEdit from './ui/ModalEdit'
 
 
 export default function Usuarios() {
@@ -16,8 +17,11 @@ export default function Usuarios() {
     email: ''
   })
   const [loadingSave, setLoadingSave] = useState(false)
+  const [id, setId] = useState('')
 
-  //listar usuarios
+  /*
+      LISTAR 
+  */
   const listUsuarios = async () => {
     try{
       setError(false)
@@ -54,6 +58,11 @@ export default function Usuarios() {
     })
   }
 
+
+  /*
+      GUARDAR 
+  */
+
   const saveUsuario = async () => {
     try{
       setError(false)
@@ -74,11 +83,50 @@ export default function Usuarios() {
 
   const closeModal = () => {
     setUsuario({nombre: '', email: ''})
+    if(id)setId('')
   }
 
+   /*
+      EDITAR 
+  */
+
+  const selectUsuario = (evt) => {
+    evt.preventDefault()
+    setId(evt.target.id)
+    const tEq = usuarios.filter(usuario => usuario._id === evt.target.id)
+    setUsuario({...tEq[0]})
+  }
+  
+  const editUsuario = async () => {
+    try{
+      setError(false)
+      setLoadingSave(true)
+      const response = await editUsuarios(id, usuario)
+      console.log(response)
+      setUsuario({nombre: ''})
+      listUsuarios()
+      setTimeout(() => {
+        setLoadingSave(false)
+      }, 500)
+    }catch(e){
+      console.log(e)
+      setError(true)
+      setLoadingSave(false)
+    }
+  }
 
   return (
     <>
+
+      <ModalEdit
+        title={title}
+        closeModal={closeModal}
+        handleChange={handleChange}
+        tipo={usuario}
+        loadingSave={loadingSave}
+        edit={editUsuario}
+      />
+
       <ModalUser
         title={title}
         closeModal={closeModal}
@@ -157,7 +205,16 @@ export default function Usuarios() {
                         <td>{usuario.estado ? 'Activo' : 'Inactivo'}</td>
                         <td>{dayjs(usuario.createdAt).format('YYYY-MM-DD')}</td>
                         <td>{dayjs(usuario.updatedAt).format('YYYY-MM-DD')}</td>
-                        <td><button type="button" className="btn btn-success">Editar</button></td>
+                        <td><button 
+                            onClick={selectUsuario}
+                            type="button" 
+                            className="btn btn-success"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#exampleModalEdit" 
+                            id={usuario._id}
+                          >
+                            Editar
+                          </button></td>
                       </tr>
                     )
                   })

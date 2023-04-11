@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { getMarcas, createMarcas } from '../services/MarcaService'
+import { getMarcas, createMarcas, editMarcas } from '../services/MarcaService'
 import dayjs from 'dayjs'
 import Modal from './ui/Modal'
+import ModalEdit from './ui/ModalEdit'
 
 
 export default function Marcas() {
@@ -14,6 +15,11 @@ export default function Marcas() {
     nombre: ''
   })
   const [loadingSave, setLoadingSave] = useState(false)
+  const [id, setId] = useState('')
+
+  /*
+      LISTAR 
+  */
 
   const listMarcas = async () => {
     try{
@@ -48,6 +54,10 @@ export default function Marcas() {
     })
   }
 
+  /*
+      GUARDAR 
+  */
+
   const saveMarca = async () => {
     try{
       setError(false)
@@ -70,12 +80,52 @@ export default function Marcas() {
 
   const closeModal = () => {
     setMarca({  nombre: '' })
+    if(id)setId('')
   }
  
 
+   /*
+      EDITAR 
+  */
+  const selectMarca = (evt) => {
+    evt.preventDefault()
+    setId(evt.target.id)
+    const tEq = marcas.filter(marca => marca._id === evt.target.id)
+    setMarca({...tEq[0]})
+  }
+
+  const editMarca = async () => {
+    try{
+      setError(false)
+      setLoadingSave(true)
+      const response = await editMarcas(id, marca)
+      console.log(response)
+      setMarca({
+        nombre: ''
+      })
+      listMarcas()
+      setTimeout(() => {
+        setLoadingSave(false)
+      }, 500)
+    }catch(e){
+      console.log(e)
+      setError(true)
+      setLoadingSave(false)
+    }
+  }
+
+      
+
   return (
     <>
-    
+      <ModalEdit
+        title={title}
+        closeModal={closeModal}
+        handleChange={handleChange}
+        tipo={marca}
+        loadingSave={loadingSave}
+        edit={editMarca}
+      />
    
       <Modal
 
@@ -154,12 +204,13 @@ export default function Marcas() {
                         <td>{dayjs(marca.fechaCreacion).format('YYYY-MM-DD')}</td>
                         <td>{dayjs(marca.fechaActualizacion).format('YYYY-MM-DD')}</td>
                         <td>
-                          <button 
+                        <button 
+                            onClick={selectMarca}
                             type="button" 
-                            className="btn btn-outline-primary"
+                            className="btn btn-success"
                             data-bs-toggle="modal" 
-                            data-bs-target="#exampleModal" 
-                            data-bs-whatever="@mdo"
+                            data-bs-target="#exampleModalEdit" 
+                            id={marca._id}
                           >
                             Editar
                           </button>

@@ -18,7 +18,20 @@ const createUsuarios = (data ={}) => {
     })
 }
 
+// editar un usuario
+
+const editUsuarios = (tipoId, data) => {
+    return axiosConfig.put('usuarios/'+tipoId, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+
+
 export {
     getUsuarios,
-    createUsuarios
+    createUsuarios,
+    editUsuarios
 }
